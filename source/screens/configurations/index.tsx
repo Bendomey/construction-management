@@ -39,6 +39,8 @@ export const MachineTypesConfigurations = () => {
                         size="lg"
                         onPress={addState.open}
                         icon={<AddIcon name="share" as="Entypo" />}
+                        renderInPortal={false}
+                        right={7} bottom={10}
                     />
                 ) : null
             }

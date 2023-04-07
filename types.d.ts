@@ -7,4 +7,9 @@ export type Empty = {};
 export type MainDrawerItemsProps = {
   Dashboard: undefined;
   Configurations: undefined;
+  [Page: string]: {
+    machineType: string;
+  }
 }
+
+export type BlockTypes = "CHECKBOX" | "NUMBER" | "TEXT" | "DATE"
