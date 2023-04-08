@@ -1,5 +1,4 @@
 import { BlockTypes } from './types';
-import { v4 as uuidv4 } from 'uuid';
 
 export interface MachineType {
   /** Unique ID of each machine type configured. */
