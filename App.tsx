@@ -20,14 +20,12 @@ export default function App() {
 
 const Loader = () => {
   return (
-    <NativeBaseProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <Center pt={50}>
-            <ActivityIndicator />
-          </Center>
-        </View>
-      </SafeAreaView>
-    </NativeBaseProvider>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
+        <Center pt={50}>
+          <ActivityIndicator />
+        </Center>
+      </View>
+    </SafeAreaView>
   )
 }
