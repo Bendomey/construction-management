@@ -1,16 +1,29 @@
-import { Box, Button, Flex, InfoIcon, Input, Pressable, Stack, Text, Icon, Center, Modal, Radio, AlertDialog, IconButton } from "native-base"
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
-import { RFValue } from "react-native-responsive-fontsize"
+import { Box, Button, Flex, InfoIcon, Input, Pressable, Stack, Text, Icon, Center, Modal, Radio, AlertDialog, IconButton, Toast } from "native-base"
 import { useDisclosure } from "../../../hooks/useDisclosure"
 import { useRef } from "react"
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useAppDispatch } from "../../state";
+import { DELETE_MACHINE_ACTION } from "../../state/slices/app.slice";
 
 interface Props {
+    title: string
+    index: number
 }
 
-export const DeleteMachineDialog = ({ }: Props) => {
+export const DeleteMachineDialog = ({ title, index }: Props) => {
     const { isOpen, open, close } = useDisclosure()
     const cancelRef = useRef(null);
+    const dispatch = useAppDispatch()
+
+    const handleSubmit = () => {
+        dispatch(
+            DELETE_MACHINE_ACTION(index)
+        )
+        Toast.show({
+            description: `${title ?? 'Machine'} has been deleted.`
+        })
+        close()
+    }
 
     return (
         <>
@@ -20,14 +33,14 @@ export const DeleteMachineDialog = ({ }: Props) => {
                     <AlertDialog.CloseButton />
                     <AlertDialog.Header>Delete Machine</AlertDialog.Header>
                     <AlertDialog.Body>
-                        You are deleting this machine, <Text fontWeight='bold'>Budozer.</Text>
+                        You are deleting this machine, <Text fontWeight='bold'>{title}.</Text>
                     </AlertDialog.Body>
                     <AlertDialog.Footer>
                         <Button.Group space={2}>
                             <Button variant="unstyled" colorScheme="coolGray" onPress={close} ref={cancelRef}>
                                 Cancel
                             </Button>
-                            <Button colorScheme="danger" onPress={close}>
+                            <Button colorScheme="danger" onPress={handleSubmit}>
                                 Delete
                             </Button>
                         </Button.Group>

@@ -57,6 +57,40 @@ const appSlice = createSlice({
         $splice: [[payload, 1]],
       });
     },
+
+    ADD_MACHINE_ACTION: (
+      state,
+      { payload }: PayloadAction<Omit<Machine, 'id'>>
+    ) => {
+      const uniqueId = uuid.v4();
+      if (typeof uniqueId == 'string') {
+        state.machines = update(state.machines, {
+          $push: [
+            {
+              ...payload,
+              id: uniqueId,
+            },
+          ],
+        });
+      }
+    },
+
+    UPDATE_MACHINE_ACTION: (
+      state,
+      { payload }: PayloadAction<{ index: number; data: Machine }>
+    ) => {
+      state.machines = update(state.machines, {
+        [payload.index]: {
+          $set: payload.data,
+        },
+      });
+    },
+
+    DELETE_MACHINE_ACTION: (state, { payload }: PayloadAction<number>) => {
+      state.machines = update(state.machines, {
+        $splice: [[payload, 1]],
+      });
+    },
   },
 });
 
@@ -64,6 +98,9 @@ export const {
   SAVE_NEW_MACHINE_TYPE_ACTION,
   DELETE_MACHINE_TYPE_ACTION,
   UPDATE_MACHINE_TYPE_ACTION,
+  ADD_MACHINE_ACTION,
+  DELETE_MACHINE_ACTION,
+  UPDATE_MACHINE_ACTION,
 } = appSlice.actions;
 
 export default appSlice.reducer;

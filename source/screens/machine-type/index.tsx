@@ -4,7 +4,7 @@ import { useDisclosure } from "../../../hooks/useDisclosure"
 import { Machine } from "../../components/Machine"
 import { RFValue } from "react-native-responsive-fontsize"
 import { AddMachine } from "../../components/AddMachine"
-import { useMachineTypesSelector } from "../../state/selectors"
+import { useMachineTypeSelector, useMachineTypesSelector, useMachinesSelector } from "../../state/selectors"
 import { useSelector } from "react-redux"
 import { RootState } from "../../state"
 
@@ -13,27 +13,30 @@ interface Props {
     route: any
 }
 
-const machines = [1]
 export const MachineType = ({ route }: Props) => {
     const addState = useDisclosure()
+    const machineType = useMachineTypeSelector(route.params.machineType)
+    const machines = useMachinesSelector(route.params.machineType)
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             {
                 machines.length ? (
                     <ScrollView>
-                        <Machine />
-                        <Machine />
-                        <Machine />
+                        {
+                            machines.map((machine, machineIdx) => (
+                                <Machine data={machine} machineType={machineType} index={machineIdx} key={machine.id} />
+                            ))
+                        }
                     </ScrollView>
                 ) : (
                     <Center style={{ flex: 1 }}>
                         <InfoIcon size='10' color='gray.300' />
                         <Box my={RFValue(10)}>
-                            <Text color='gray.600' fontSize='lg'>No Machine Type Added</Text>
+                            <Text color='gray.600' fontSize='lg'>No Machine Added</Text>
                         </Box>
                         <Button size='lg' onPress={addState.open}>
-                            <Text color='white'> Add {route.params.machineType}</Text>
+                            <Text color='white'> Add {machineType.name}</Text>
                         </Button>
                     </Center>
                 )
@@ -50,7 +53,7 @@ export const MachineType = ({ route }: Props) => {
                     />
                 ) : null
             }
-            <AddMachine close={addState.close} isOpen={addState.isOpen} />
+            <AddMachine machineType={machineType} close={addState.close} isOpen={addState.isOpen} />
         </SafeAreaView>
     )
 }
