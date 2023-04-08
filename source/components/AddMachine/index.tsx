@@ -104,6 +104,9 @@ const Field = ({ blockType, checkbox, input, checkBoxLabel }: FieldProps) => {
                     <Text ml={2}>{checkBoxLabel}</Text>
                 </Flex>
             )
+        // TODO: Create a custom component for date.
+        // Does not exists in UI Library used. native base.
+        // For now defaults to text input.
         case "DATE":
         case "NUMBER":
             return <Input size='2xl' {...input} keyboardType="number-pad" />
