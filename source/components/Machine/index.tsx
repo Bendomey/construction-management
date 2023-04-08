@@ -5,6 +5,7 @@ import { DeleteMachineDialog } from "../DeleteMachineDialog";
 import { Machine as IMachine, MachineType } from "../../../models";
 import { useDisclosure } from "../../../hooks/useDisclosure";
 import { UpdateMachine } from "../UpdateMachine";
+import { isDate } from "lodash";
 
 interface Props {
     data: IMachine
@@ -21,9 +22,9 @@ export const Machine = ({ data, machineType, index }: Props) => {
                 <Text fontWeight='bold' fontSize='lg'>{title}</Text>
                 {
                     Object.entries(data.data).map(([key, value]) => {
-                        const type = typeof value === 'string' ? 'TEXT' : typeof value === 'boolean' ? 'CHECKBOX' : 'DATE'
+                        const type = isDate(value) ? 'DATE' : typeof value === 'boolean' ? 'CHECKBOX' : 'TEXT'
                         if (machineType.metaData.titleAttribute === key) {
-                            return
+                            return;
                         }
 
                         return (
@@ -63,12 +64,13 @@ interface BlockProps {
 }
 
 const Block = ({ isChecked, value, type, checkboxLabel }: BlockProps) => {
-
+    console.log(value, new Date(value).toDateString(), "hello")
     switch (type) {
         case "CHECKBOX":
             return <Checkbox isDisabled isChecked={isChecked} value='' color="green">{checkboxLabel}</Checkbox>
 
         case "DATE":
+            return <Input size='xl' value={new Date(value).toDateString()} _disabled={{ backgroundColor: 'gray.200' }} isDisabled />
         case "TEXT":
         case "NUMBER":
         default:

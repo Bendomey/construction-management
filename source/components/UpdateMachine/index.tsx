@@ -7,6 +7,8 @@ import { useAppDispatch } from "../../state";
 import { UPDATE_MACHINE_ACTION } from "../../state/slices/app.slice";
 import { InterfaceSwitchProps } from "native-base/lib/typescript/components/primitives/Switch/types";
 
+import DateTimePicker, { BaseProps } from '@react-native-community/datetimepicker';
+
 interface Props {
     isOpen: boolean
     close: VoidFunction
@@ -36,10 +38,12 @@ export const UpdateMachine = ({ isOpen, close, machineType, index, data }: Props
 
         close()
     }
+
     return (
         <Formik initialValues={data.data} onSubmit={handleSubmit}>
             {
                 ({ values, handleChange, setFieldValue, handleReset, handleSubmit }) => {
+                    console.log(values)
                     return (
                         <Modal isOpen={isOpen} onClose={() => {
                             handleReset()
@@ -60,7 +64,11 @@ export const UpdateMachine = ({ isOpen, close, machineType, index, data }: Props
                                                     }}
                                                     checkbox={{
                                                         onValueChange: (val) => setFieldValue(attr.name, val),
-                                                        value: values[attr.name] ? !Boolean(values[attr.name]) : false
+                                                        value: values[attr.name] ? Boolean(values[attr.name]) : false
+                                                    }}
+                                                    date={{
+                                                        onChange: (e, date) => setFieldValue(attr.name, date),
+                                                        value: values[attr.name] ? new Date(values[attr.name] as Date) : new Date()
                                                     }}
 
                                                 />
@@ -87,9 +95,10 @@ interface FieldProps {
     checkbox?: InterfaceSwitchProps
     checkBoxLabel?: string
     input?: InterfaceInputProps
+    date?: BaseProps
 }
 
-const Field = ({ blockType, checkbox, input, checkBoxLabel }: FieldProps) => {
+const Field = ({ blockType, checkbox, input, checkBoxLabel, date }: FieldProps) => {
     switch (blockType) {
         case "CHECKBOX":
             return (
@@ -99,6 +108,7 @@ const Field = ({ blockType, checkbox, input, checkBoxLabel }: FieldProps) => {
                 </Flex>
             )
         case "DATE":
+            return <DateTimePicker {...date} display="spinner" />
         case "NUMBER":
             return <Input size='2xl' {...input} keyboardType="number-pad" />
         case "TEXT":

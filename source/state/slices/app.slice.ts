@@ -63,25 +63,23 @@ const appSlice = createSlice({
                 : attribute.type === 'NUMBER'
                 ? ''
                 : attribute.type === 'DATE'
-                ? new Date().toISOString()
+                ? new Date()
                 : '';
 
-            data[attribute.name] = (
+            data[attribute.name] =
               typeof machine.data[attribute.name] === 'string' &&
               ['NUMBER', 'TEXT'].includes(attribute.type)
-            )
-              ? machine.data[attribute.name]
-              : typeof machine.data[attribute.name] === 'boolean' &&
-                ['CHECKBOX'].includes(attribute.type)
-              ? machine.data[attribute.name]
-              : typeof machine.data[attribute.name] === 'object' &&
-                ['DATE'].includes(attribute.type)
-              ? machine.data[attribute.name]
-              : typeDefaults;
+                ? machine.data[attribute.name]
+                : typeof machine.data[attribute.name] === 'boolean' &&
+                  ['CHECKBOX'].includes(attribute.type)
+                ? machine.data[attribute.name]
+                : typeof machine.data[attribute.name] === 'object' &&
+                  ['DATE'].includes(attribute.type)
+                ? machine.data[attribute.name]
+                : typeDefaults;
           });
           return { ...machine, data };
         });
-
       }
 
       state.machineTypes = update(state.machineTypes, {

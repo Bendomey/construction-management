@@ -24,12 +24,13 @@ const validationSchema = Yup.object({
 export const AttributeDialog = ({ type, InvokeAttributeComponent, onSubmit, data }: Props) => {
     const { isOpen, open, close } = useDisclosure()
 
-    const handleSubmit = (attribute: MachineTypeAttribute, { resetForm }: FormikHelpers<MachineTypeAttribute>) => {
+    const handleSubmit = (attribute: MachineTypeAttribute, { setValues }: FormikHelpers<MachineTypeAttribute>) => {
         onSubmit(attribute)
         Toast.show({
             description: "Attributes Updated Successfully"
         })
         close()
+        setValues({ name: '', type: 'TEXT' })
     }
 
     return (
@@ -39,11 +40,14 @@ export const AttributeDialog = ({ type, InvokeAttributeComponent, onSubmit, data
                 initialValues={{ name: data?.name ?? '', type: data?.type ?? 'TEXT' }}
                 onSubmit={handleSubmit}
                 validationSchema={validationSchema}
+                validateOnBlur={false}
+                validateOnChange={false}
             >
                 {
-                    ({ values, handleSubmit, errors, handleChange, handleBlur, handleReset }) => (
-                        <Modal isOpen={isOpen} onClose={()=>{
+                    ({ values, handleSubmit, errors, handleChange, handleBlur, setValues }) => (
+                        <Modal isOpen={isOpen} onClose={() => {
                             close()
+                            setValues({ name: '', type: 'TEXT' })
                         }} size='md'>
                             <Modal.Content>
                                 <Modal.CloseButton />
