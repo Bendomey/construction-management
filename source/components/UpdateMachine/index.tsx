@@ -1,49 +1,43 @@
 import { Box, Button, Input, Text, Modal, Flex, Toast, Switch } from "native-base"
 import { BlockTypes } from "../../../types";
 import { InterfaceInputProps } from "native-base/lib/typescript/components/primitives/Input/types";
-import { MachineType } from "../../../models";
+import { Machine, MachineType } from "../../../models";
 import { Formik, FormikHelpers } from "formik";
 import { useAppDispatch } from "../../state";
-import { ADD_MACHINE_ACTION } from "../../state/slices/app.slice";
+import { UPDATE_MACHINE_ACTION } from "../../state/slices/app.slice";
 import { InterfaceSwitchProps } from "native-base/lib/typescript/components/primitives/Switch/types";
-import { useMemo } from "react";
 
 interface Props {
     isOpen: boolean
     close: VoidFunction
     machineType: MachineType
+    data: Machine
+    index: number
 }
 
-export const AddMachine = ({ isOpen, close, machineType }: Props) => {
+export const UpdateMachine = ({ isOpen, close, machineType, index, data }: Props) => {
     const dispatch = useAppDispatch()
 
-    const handleSubmit = (data: Record<string, string | number | Date | boolean>, helpers: FormikHelpers<Record<string, string | number | Date | boolean>>) => {
-
+    const handleSubmit = (values: Record<string, string | number | Date | boolean>, helpers: FormikHelpers<Record<string, string | number | Date | boolean>>) => {
         dispatch(
-            ADD_MACHINE_ACTION({
-                machineTypeId: machineType.id,
-                data: data
+            UPDATE_MACHINE_ACTION({
+                id: data.id,
+                data: {
+                    data: values,
+                    id: data.id,
+                    machineTypeId: data.machineTypeId
+                }
             })
         )
 
         Toast.show({
-            description: `${data[machineType.metaData.titleAttribute] ?? 'Machine'} has been added successfully!`
+            description: `${data[machineType.metaData.titleAttribute] ?? 'Machine'} has been updated successfully!`
         });
 
-        helpers.resetForm()
         close()
     }
-
-    const initValues = useMemo(() => {
-        const data: Record<string, string | number | Date | boolean> = {}
-        machineType.attributes.forEach(attr => {
-            data[attr.name] = attr.type === 'CHECKBOX' ? false : attr.type === 'DATE' ? new Date() : attr.type === 'NUMBER' ? 0 : ''
-        })
-        return data
-    }, [machineType.attributes])
-
     return (
-        <Formik initialValues={initValues} onSubmit={handleSubmit}>
+        <Formik initialValues={data.data} onSubmit={handleSubmit}>
             {
                 ({ values, handleChange, setFieldValue, handleReset, handleSubmit }) => {
                     return (
@@ -53,7 +47,7 @@ export const AddMachine = ({ isOpen, close, machineType }: Props) => {
                         }} size='xl'>
                             <Modal.Content h="xl">
                                 <Modal.CloseButton />
-                                <Modal.Header>Add New Machine</Modal.Header>
+                                <Modal.Header>Update Machine</Modal.Header>
                                 <Modal.Body>
                                     {
                                         machineType.attributes.map((attr, idx) => (
@@ -76,7 +70,7 @@ export const AddMachine = ({ isOpen, close, machineType }: Props) => {
                                 </Modal.Body>
                                 <Modal.Footer>
                                     <Button onPress={() => handleSubmit()} width='full'>
-                                        Add
+                                        Update
                                     </Button>
                                 </Modal.Footer>
                             </Modal.Content>

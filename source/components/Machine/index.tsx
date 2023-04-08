@@ -4,6 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { DeleteMachineDialog } from "../DeleteMachineDialog";
 import { Machine as IMachine, MachineType } from "../../../models";
 import { useDisclosure } from "../../../hooks/useDisclosure";
+import { UpdateMachine } from "../UpdateMachine";
 
 interface Props {
     data: IMachine
@@ -44,11 +45,12 @@ export const Machine = ({ data, machineType, index }: Props) => {
 
                 <Flex alignItems='flex-end' mt={5}>
                     <Flex flexDirection='row' alignItems='center' justifyContent='space-between'>
-                        <IconButton variant='subtle' backgroundColor='blue.600' icon={<Icon as={Ionicons} name='create-outline' size='sm' color='white' />} />
+                        <IconButton onPress={updateState.open} variant='subtle' backgroundColor='blue.600' icon={<Icon as={Ionicons} name='create-outline' size='sm' color='white' />} />
                         <DeleteMachineDialog id={data.id} title={title} />
                     </Flex>
                 </Flex>
             </Box>
+            <UpdateMachine close={updateState.close} data={data} index={index} isOpen={updateState.isOpen} machineType={machineType} />
         </>
 
     )

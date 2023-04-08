@@ -120,13 +120,9 @@ const appSlice = createSlice({
 
     UPDATE_MACHINE_ACTION: (
       state,
-      { payload }: PayloadAction<{ index: number; data: Machine }>
+      { payload }: PayloadAction<{ id: string; data: Machine }>
     ) => {
-      state.machines = update(state.machines, {
-        [payload.index]: {
-          $set: payload.data,
-        },
-      });
+      state.machines = state.machines.map(mach => mach.id === payload.id ? payload.data : mach);
     },
 
     DELETE_MACHINE_ACTION: (state, { payload }: PayloadAction<string>) => {
