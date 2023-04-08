@@ -3,7 +3,6 @@ import { useDisclosure } from "../../../hooks/useDisclosure"
 import { Formik, FormikHelpers } from "formik";
 import { MachineTypeAttribute } from "../../../models"
 import * as Yup from 'yup';
-import { ReactElement } from "react";
 
 interface Props {
     type: 'Add' | 'Update'
@@ -31,7 +30,6 @@ export const AttributeDialog = ({ type, InvokeAttributeComponent, onSubmit, data
             description: "Attributes Updated Successfully"
         })
         close()
-        resetForm()
     }
 
     return (
@@ -43,8 +41,10 @@ export const AttributeDialog = ({ type, InvokeAttributeComponent, onSubmit, data
                 validationSchema={validationSchema}
             >
                 {
-                    ({ values, handleSubmit, errors, handleChange, handleBlur }) => (
-                        <Modal isOpen={isOpen} onClose={close} size='md'>
+                    ({ values, handleSubmit, errors, handleChange, handleBlur, handleReset }) => (
+                        <Modal isOpen={isOpen} onClose={()=>{
+                            close()
+                        }} size='md'>
                             <Modal.Content>
                                 <Modal.CloseButton />
                                 <Modal.Header>Attribute Manager</Modal.Header>
