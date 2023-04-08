@@ -11,7 +11,6 @@ import { MainDrawerItemsProps } from "../../../types"
 type DashboardPageNavigationProp = NavigationProp<MainDrawerItemsProps, "Dashboard">;
 
 interface Props {
-    /** TODO: type it */
     navigation: DashboardPageNavigationProp
 }
 export const Dashboard = ({ navigation }: Props) => {
