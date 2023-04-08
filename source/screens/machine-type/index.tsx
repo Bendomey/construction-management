@@ -4,8 +4,12 @@ import { useDisclosure } from "../../../hooks/useDisclosure"
 import { Machine } from "../../components/Machine"
 import { RFValue } from "react-native-responsive-fontsize"
 import { AddMachine } from "../../components/AddMachine"
+import { useMachineTypesSelector } from "../../state/selectors"
+import { useSelector } from "react-redux"
+import { RootState } from "../../state"
 
 interface Props {
+    /** TODO: Type it */
     route: any
 }
 

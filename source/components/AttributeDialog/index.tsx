@@ -3,6 +3,7 @@ import { useDisclosure } from "../../../hooks/useDisclosure"
 
 interface Props {
     type: 'Add' | 'Update'
+    /** TOD: Type it */
     InvokeAttributeComponent: any
 }
 

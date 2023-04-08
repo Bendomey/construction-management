@@ -5,20 +5,24 @@ import { AddMachineType } from "../../components/AddMachineType"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native'
 import { DeleteMachineTypeDialog } from "../../components/DeleteMachineTypeDialog";
+import { useMachineTypesSelector } from "../../state/selectors";
+import { MachineType as IMachineType } from "../../../models";
+import _ from 'lodash'
 
-const machineTypes = [1]
 export const MachineTypesConfigurations = () => {
     const addState = useDisclosure()
+    const machineTypes = useMachineTypesSelector()
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             {
                 machineTypes.length ? (
                     <ScrollView>
-                        <MachineType />
-                        <MachineType />
-                        <MachineType />
-                        <MachineType />
+                        {
+                            machineTypes.map(machineType => (
+                                <MachineType key={machineType.id} data={machineType} />
+                            ))
+                        }
                     </ScrollView>
                 ) : (
                     <Center style={{ flex: 1 }}>
@@ -49,18 +53,22 @@ export const MachineTypesConfigurations = () => {
     )
 }
 
-const MachineType = () => {
+interface MachineTypeProps {
+    data: IMachineType
+}
+
+const MachineType = ({ data }: MachineTypeProps) => {
     return (
         <Box background='white' mx={3} mt={3} p={4} borderRadius='md' borderWidth={1} borderColor='gray.200'>
             <Icon as={Ionicons} name='construct-outline' size='lg' />
             <Box mt={3}>
-                <Text fontWeight='bold' fontSize='lg'>Hello world</Text>
+                <Text fontWeight='bold' fontSize='lg'>{data.name}</Text>
             </Box>
             {
-                [1, 2, 3].map(() => (
+                data.attributes.map((attribute) => (
                     <Flex flexDirection='row' mt={2} alignItems='center' borderWidth={1} borderColor='gray.100' p={2} borderRadius='md' justifyContent='space-between'>
-                        <Text>Weight</Text>
-                        <Badge ml={2} colorScheme='blue'>Number</Badge>
+                        <Text>{attribute.name}</Text>
+                        <Badge ml={2} colorScheme='blue'>{_.startCase(attribute.type)}</Badge>
                     </Flex>
                 ))
             }

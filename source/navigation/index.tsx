@@ -9,7 +9,7 @@ const Drawer = createDrawerNavigator<MainDrawerItemsProps>();
 export const Navigator = () => {
     return (
         <NavigationContainer>
-            <Drawer.Navigator initialRouteName='MachineTypeOne'>
+            <Drawer.Navigator initialRouteName='Configurations'>
                 <Drawer.Screen name="Dashboard" component={Dashboard} />
                 <Drawer.Screen 
                     name="MachineTypeOne" 
