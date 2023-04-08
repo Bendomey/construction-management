@@ -1,10 +1,10 @@
-import { AddIcon, Box, Button, Center, Fab, InfoIcon, ScrollView, Text, View } from "native-base"
+import { AddIcon, Box, Button, Center, Fab, FlatList, InfoIcon, ScrollView, Text, View } from "native-base"
 import { SafeAreaView } from "react-native"
 import { useDisclosure } from "../../../hooks/useDisclosure"
 import { Machine } from "../../components/Machine"
 import { RFValue } from "react-native-responsive-fontsize"
 import { AddMachine } from "../../components/AddMachine"
-import { useMachineTypeSelector, useMachineTypesSelector, useMachinesSelector } from "../../state/selectors"
+import { useMachineTypeSelector, useMachineTypesSelector, useMachinesSelector, useMachinesUnderMachineTypeSelector } from "../../state/selectors"
 import { useSelector } from "react-redux"
 import { RootState } from "../../state"
 
@@ -16,19 +16,17 @@ interface Props {
 export const MachineType = ({ route }: Props) => {
     const addState = useDisclosure()
     const machineType = useMachineTypeSelector(route.params.machineType)
-    const machines = useMachinesSelector(route.params.machineType)
+    const machines = useMachinesUnderMachineTypeSelector(route.params.machineType)
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             {
                 machines.length ? (
-                    <ScrollView>
-                        {
-                            machines.map((machine, machineIdx) => (
-                                <Machine data={machine} machineType={machineType} index={machineIdx} key={machine.id} />
-                            ))
-                        }
-                    </ScrollView>
+                    <FlatList
+                        data={machines}
+                        renderItem={({ item, index }) => <Machine data={item} machineType={machineType} index={index} />}
+                        keyExtractor={item => item.id}
+                    />
                 ) : (
                     <Center style={{ flex: 1 }}>
                         <InfoIcon size='10' color='gray.300' />

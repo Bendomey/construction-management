@@ -18,7 +18,7 @@ export const DeleteMachineTypeDialog = ({ data, index }: Props) => {
 
     const onSubmit = () => {
         dispatch(
-            DELETE_MACHINE_TYPE_ACTION(index)
+            DELETE_MACHINE_TYPE_ACTION(data.id)
         )
         Toast.show({
             description: `${data.name} has been deleted.`

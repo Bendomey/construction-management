@@ -1,4 +1,4 @@
-import { AddIcon, Badge, Box, Button, Center, Fab, Flex, Icon, IconButton, InfoIcon, Pressable, ScrollView, Text } from "native-base"
+import { AddIcon, Badge, Box, Button, Center, Fab, FlatList, Flex, Icon, IconButton, InfoIcon, Pressable, ScrollView, Text } from "native-base"
 import { RFValue } from "react-native-responsive-fontsize"
 import { useDisclosure } from "../../../hooks/useDisclosure"
 import { AddMachineType } from "../../components/AddMachineType"
@@ -13,18 +13,15 @@ export const MachineTypesConfigurations = () => {
     const addState = useDisclosure()
     const machineTypes = useMachineTypesSelector()
 
-
     return (
         <SafeAreaView style={{ flex: 1 }}>
             {
                 machineTypes.length ? (
-                    <ScrollView>
-                        {
-                            machineTypes.map((machineType, machinTypeIdx) => (
-                                <MachineType key={machineType.id} data={machineType} index={machinTypeIdx} />
-                            ))
-                        }
-                    </ScrollView>
+                    <FlatList
+                        data={machineTypes}
+                        renderItem={({ item, index }) => <MachineType data={item} index={index} />}
+                        keyExtractor={item => item.id}
+                    />
                 ) : (
                     <Center style={{ flex: 1 }}>
                         <InfoIcon size='10' color='gray.300' />

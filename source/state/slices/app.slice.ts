@@ -52,10 +52,10 @@ const appSlice = createSlice({
       });
     },
 
-    DELETE_MACHINE_TYPE_ACTION: (state, { payload }: PayloadAction<number>) => {
-      state.machineTypes = update(state.machineTypes, {
-        $splice: [[payload, 1]],
-      });
+    DELETE_MACHINE_TYPE_ACTION: (state, { payload }: PayloadAction<string>) => {
+      state.machineTypes = state.machineTypes.filter(
+        (machineType) => machineType.id !== payload
+      );
     },
 
     ADD_MACHINE_ACTION: (
@@ -86,10 +86,10 @@ const appSlice = createSlice({
       });
     },
 
-    DELETE_MACHINE_ACTION: (state, { payload }: PayloadAction<number>) => {
-      state.machines = update(state.machines, {
-        $splice: [[payload, 1]],
-      });
+    DELETE_MACHINE_ACTION: (state, { payload }: PayloadAction<string>) => {
+      state.machines = state.machines.filter(
+        (machine) => machine.id !== payload
+      );
     },
   },
 });

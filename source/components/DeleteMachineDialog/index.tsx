@@ -7,17 +7,17 @@ import { DELETE_MACHINE_ACTION } from "../../state/slices/app.slice";
 
 interface Props {
     title: string
-    index: number
+    id: string
 }
 
-export const DeleteMachineDialog = ({ title, index }: Props) => {
+export const DeleteMachineDialog = ({ title, id }: Props) => {
     const { isOpen, open, close } = useDisclosure()
     const cancelRef = useRef(null);
     const dispatch = useAppDispatch()
 
     const handleSubmit = () => {
         dispatch(
-            DELETE_MACHINE_ACTION(index)
+            DELETE_MACHINE_ACTION(id)
         )
         Toast.show({
             description: `${title ?? 'Machine'} has been deleted.`

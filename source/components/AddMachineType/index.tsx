@@ -65,6 +65,8 @@ export const AddMachineType = ({ isOpen, close }: Props) => {
             initialValues={{ name: '', attributes: [] }}
             onSubmit={handleSubmit}
             validationSchema={validationSchema}
+            validateOnBlur={false}
+            validateOnChange={false}
         >
             {
                 ({ handleChange, handleBlur, handleSubmit, values, errors, handleReset, setFieldValue }) => {

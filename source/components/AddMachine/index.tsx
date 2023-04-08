@@ -2,7 +2,7 @@ import { Box, Button, Input, Text, Modal, Flex, Toast, Switch } from "native-bas
 import { BlockTypes } from "../../../types";
 import { InterfaceInputProps } from "native-base/lib/typescript/components/primitives/Input/types";
 import { MachineType } from "../../../models";
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import { useAppDispatch } from "../../state";
 import { ADD_MACHINE_ACTION } from "../../state/slices/app.slice";
 import { InterfaceSwitchProps } from "native-base/lib/typescript/components/primitives/Switch/types";
@@ -17,7 +17,7 @@ interface Props {
 export const AddMachine = ({ isOpen, close, machineType }: Props) => {
     const dispatch = useAppDispatch()
 
-    const handleSubmit = (data: Record<string, string | number | Date | boolean>) => {
+    const handleSubmit = (data: Record<string, string | number | Date | boolean>, helpers: FormikHelpers<Record<string, string | number | Date | boolean>>) => {
 
         dispatch(
             ADD_MACHINE_ACTION({
@@ -30,6 +30,7 @@ export const AddMachine = ({ isOpen, close, machineType }: Props) => {
             description: `${data[machineType.metaData.titleAttribute] ?? 'Machine'} has been added successfully!`
         });
 
+        helpers.resetForm()
         close()
     }
 

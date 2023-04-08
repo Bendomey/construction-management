@@ -41,7 +41,7 @@ export const Machine = ({ data, machineType, index }: Props) => {
             <Flex alignItems='flex-end' mt={5}>
                 <Flex flexDirection='row' alignItems='center' justifyContent='space-between'>
                     <IconButton variant='subtle' backgroundColor='blue.600' icon={<Icon as={Ionicons} name='create-outline' size='sm' color='white' />} />
-                    <DeleteMachineDialog index={index} title={title} />
+                    <DeleteMachineDialog id={data.id} title={title} />
                 </Flex>
             </Flex>
         </Box>
