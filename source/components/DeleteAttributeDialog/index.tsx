@@ -1,14 +1,15 @@
-import { Box, Button, Flex, InfoIcon, Input, Pressable, Stack, Text, Icon, Center, Modal, Radio, AlertDialog, IconButton } from "native-base"
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
-import { RFValue } from "react-native-responsive-fontsize"
+import { Box, Button, Flex, InfoIcon, Input, Pressable, Stack, Text, Icon, Center, Modal, Radio, AlertDialog, IconButton, Toast } from "native-base"
 import { useDisclosure } from "../../../hooks/useDisclosure"
 import { useRef } from "react"
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { MachineTypeAttribute } from "../../../models"
 
 interface Props {
+    onPress: VoidFunction
+    data: MachineTypeAttribute
 }
 
-export const DeleteAttributeDialog = ({ }: Props) => {
+export const DeleteAttributeDialog = ({ onPress, data }: Props) => {
     const { isOpen, open, close } = useDisclosure()
     const cancelRef = useRef(null);
 
@@ -20,14 +21,20 @@ export const DeleteAttributeDialog = ({ }: Props) => {
                     <AlertDialog.CloseButton />
                     <AlertDialog.Header>Delete Attribute</AlertDialog.Header>
                     <AlertDialog.Body>
-                        You are deleting this attribute, <Text fontWeight='bold'>Weight.</Text>
+                        You are deleting this attribute, <Text fontWeight='bold'>{data.name}</Text>
                     </AlertDialog.Body>
                     <AlertDialog.Footer>
                         <Button.Group space={2}>
                             <Button variant="unstyled" colorScheme="coolGray" onPress={close} ref={cancelRef}>
                                 Cancel
                             </Button>
-                            <Button colorScheme="danger" onPress={close}>
+                            <Button colorScheme="danger" onPress={() => {
+                                onPress()
+                                close()
+                                Toast.show({
+                                    description: "Attribute Deleted Successfully"
+                                })
+                            }}>
                                 Delete
                             </Button>
                         </Button.Group>

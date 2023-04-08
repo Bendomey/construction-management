@@ -1,24 +1,30 @@
-import { Box, Button, InfoIcon, Input, Pressable, Text, Center, Modal, Flex, IconButton, Icon, Badge } from "native-base"
+import { Box, Button, InfoIcon, Input, Pressable, Text, Center, Modal, Flex, IconButton, Icon, Badge, Toast } from "native-base"
 import { AttributeDialog } from "../AttributeDialog"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { DeleteAttributeDialog } from "../DeleteAttributeDialog";
 import * as Yup from 'yup';
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import { BlockTypes } from "../../../types";
+import { useAppDispatch } from "../../state";
+import { SAVE_NEW_MACHINE_TYPE_ACTION } from "../../state/slices/app.slice";
+import _ from 'lodash'
+import { MachineTypeAttribute } from "../../../models";
+import update from 'immutability-helper'
 
 interface Props {
     isOpen: boolean
     close: VoidFunction
 }
 
-interface AttributesProps {
+interface AttributesDataProps {
     name: string;
     type: BlockTypes
+    isTitleAttribute: boolean
 }
 
 interface FormFieldsParams {
     name: string;
-    attributes: Array<AttributesProps>
+    attributes: Array<AttributesDataProps>
 }
 
 const validationSchema = Yup.object({
@@ -27,15 +33,31 @@ const validationSchema = Yup.object({
         Yup.object({
             name: Yup.string().required("Name of Required"),
             type: Yup.string().oneOf(['TEXT', 'NUMBER', 'CHECKBOX', 'DATE']).required("Name of Required"),
+            isTitleAttribute: Yup.boolean(),
         })
-    )
+    ).min(1, "At least one attribute is required")
 });
 
-const attributes = [1]
 export const AddMachineType = ({ isOpen, close }: Props) => {
+    const dispatch = useAppDispatch()
 
-    const handleSubmit = (values: FormFieldsParams) => {
-        console.log(values)
+    const handleSubmit = (values: FormFieldsParams, helpers: FormikHelpers<FormFieldsParams>) => {
+        const findAttributeWithTitleConfigured = values.attributes.find(attribute => Boolean(attribute.isTitleAttribute))
+        const titleAttribute = findAttributeWithTitleConfigured ? findAttributeWithTitleConfigured.name : values.attributes[0].name
+
+        dispatch(SAVE_NEW_MACHINE_TYPE_ACTION({
+            name: values.name,
+            slug: _.camelCase(values.name),
+            attributes: values.attributes,
+            metaData: {
+                titleAttribute
+            }
+        }));
+        Toast.show({
+            description: `${values.name} has been added.`
+        })
+        close()
+        helpers.resetForm()
     }
 
     return (
@@ -45,75 +67,102 @@ export const AddMachineType = ({ isOpen, close }: Props) => {
             validationSchema={validationSchema}
         >
             {
-                ({ handleChange, handleBlur, handleSubmit, values, errors, handleReset }) => (
-                    <Modal
-                        isOpen={isOpen}
-                        onClose={() => {
-                            handleReset();
-                            close();
-                        }}
-                        size='xl'>
-                        <Modal.Content h="full">
-                            <Modal.CloseButton />
-                            <Modal.Header>Add New Machine Type</Modal.Header>
-                            <Modal.Body>
-                                <Text mb={1}>Name *</Text>
-                                <Input size='2xl' isInvalid={Boolean(errors.name)}
-                                    onChangeText={handleChange('name')}
-                                    onBlur={handleBlur('name')}
-                                    value={values.name}
-                                />
-                                {
-                                    errors.name ? <Text fontSize="xs" color='red.600'>Name of Required</Text> : null
-                                }
-                                <Box mt={5}>
-                                    <Text mb={1} color='gray.400'>ATTRIBUTES</Text>
+                ({ handleChange, handleBlur, handleSubmit, values, errors, handleReset, setFieldValue }) => {
+                    const addnewAttribute = (newAttribute) => {
+                        setFieldValue('attributes', [...values.attributes, {
+                            ...newAttribute,
+                            isTitleAttribute: values.attributes.length === 0
+                        }])
+                    }
+
+                    const removeAttribute = (index: number) => setFieldValue('attributes', update(values.attributes, { $splice: [[index, 1]] }))
+
+                    const updateAttribute = (index: number, attribute: AttributesDataProps) => setFieldValue("attributes", update(values.attributes, { [index]: { $set: attribute } }))
+                    return (
+                        <Modal
+                            isOpen={isOpen}
+                            onClose={() => {
+                                handleReset();
+                                close();
+                            }}
+                            size='xl'>
+                            <Modal.Content h="full">
+                                <Modal.CloseButton />
+                                <Modal.Header>Add New Machine Type</Modal.Header>
+                                <Modal.Body>
+                                    <Text mb={1}>Name *</Text>
+                                    <Input size='2xl' isInvalid={Boolean(errors.name)}
+                                        onChangeText={handleChange('name')}
+                                        onBlur={handleBlur('name')}
+                                        value={values.name}
+                                    />
                                     {
-                                        attributes.length ? (
-                                            <>
-                                                <AttributeDialog type='Add' InvokeAttributeComponent={({ onPress }) => (
-                                                    <AddNewAttribute onPress={onPress} />
-                                                )} />
-                                                <Text mt={4} fontSize='xs' color='gray.400'>NB: Click on an attribute to make it the title attribute.</Text>
-                                                <Attribute active={true} />
-                                                <Attribute />
-                                                <Attribute />
-                                            </>
-                                        ) : <NoAttributesAdded />
+                                        errors.name ? <Text fontSize="xs" color='red.600'>{errors.name as string}</Text> : null
                                     }
-                                </Box>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button onPress={() => handleSubmit()} width='full'>
-                                    Add
-                                </Button>
-                            </Modal.Footer>
-                        </Modal.Content>
-                    </Modal>
-                )
+                                    <Box mt={5}>
+                                        <Text mb={1} color='gray.400'>ATTRIBUTES</Text>
+                                        {
+                                            errors.attributes ? <Text fontSize="xs" color='red.600'>{errors.attributes as string}</Text> : null
+                                        }
+
+                                        <>
+                                            {
+                                                values.attributes.length ? (
+                                                    <>
+                                                        <AttributeDialog onSubmit={addnewAttribute} type='Add' InvokeAttributeComponent={({ onPress }) => (
+                                                            <AddNewAttribute onPress={onPress} />
+                                                        )} />
+                                                        <Text mt={4} fontSize='xs' color='gray.400'>NB: Click on an attribute to make it the title attribute.</Text>
+                                                        {
+                                                            values.attributes.map((attribute, attributeIdx) => <Attribute onRemove={() => removeAttribute(attributeIdx)} onUpdate={(values) => updateAttribute(attributeIdx, values)} key={attributeIdx} active={attribute.isTitleAttribute} data={attribute} />)
+                                                        }
+                                                    </>
+                                                ) : <NoAttributesAdded onSubmit={addnewAttribute} />
+                                            }
+
+                                        </>
+                                    </Box>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button onPress={() => handleSubmit()} width='full'>
+                                        Add
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal.Content>
+                        </Modal>
+                    )
+                }
             }
         </Formik>
     )
 }
 
-interface Attribute {
+interface AttributeProps {
     active?: boolean
+    data: AttributesDataProps
+    onRemove: VoidFunction
+    onUpdate: (values: AttributesDataProps) => void
 }
 
-const Attribute = ({ active = false }: Attribute) => {
+const Attribute = ({ active = false, data, onRemove, onUpdate }: AttributeProps) => {
     return (
-        <Pressable mt={2} onPress={() => { console.log("hello") }}>
+        <Pressable mt={2} >
             <Box borderWidth={active ? 1 : 0.5} p={3} borderColor={active ? 'blue.600' : 'gray.200'} borderRadius='md'>
                 <Flex flexDirection='row' alignItems='flex-start' justifyContent='space-between'>
                     <Box display='flex' alignItems='flex-start' width='70%'>
-                        <Text fontWeight='bold'>Weight</Text>
-                        <Badge colorScheme="blue" mt={2}>Checkbox</Badge>
+                        <Text fontWeight='bold'>{data.name}</Text>
+                        <Badge colorScheme="blue" mt={2}>{_.startCase(data.type)}</Badge>
                     </Box>
                     <Flex flexDirection='row' alignItems='center' justifyContent='space-between'>
-                        <AttributeDialog type='Update' InvokeAttributeComponent={({ onPress }) => (
-                            <IconButton onPress={onPress} icon={<Icon as={Ionicons} name='create-outline' />} />
-                        )} />
-                        <DeleteAttributeDialog />
+                        <AttributeDialog onSubmit={(val) => onUpdate({
+                            ...val,
+                            isTitleAttribute: data.isTitleAttribute
+                        })}
+                            data={data}
+                            type='Update' InvokeAttributeComponent={({ onPress }) => (
+                                <IconButton onPress={onPress} icon={<Icon as={Ionicons} name='create-outline' />} />
+                            )} />
+                        <DeleteAttributeDialog data={data} onPress={onRemove} />
                     </Flex>
                 </Flex>
             </Box>
@@ -134,12 +183,16 @@ const AddNewAttribute = ({ onPress }: AddNewAttributeProps) => {
     )
 }
 
-const NoAttributesAdded = () => {
+interface NoAttributesAddedProps {
+    onSubmit: (data: MachineTypeAttribute) => void;
+}
+
+const NoAttributesAdded = ({ onSubmit }: NoAttributesAddedProps) => {
     return (
         <Center py='5'>
             <InfoIcon size='5' />
             <Text color='gray.400' mt='2'>No Attributes added</Text>
-            <AttributeDialog type='Add' InvokeAttributeComponent={({ onPress }) => (
+            <AttributeDialog onSubmit={onSubmit} type='Add' InvokeAttributeComponent={({ onPress }) => (
                 <Button mt='2' onPress={onPress}>
                     Add Attribute
                 </Button>

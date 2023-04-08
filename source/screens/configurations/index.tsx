@@ -13,14 +13,15 @@ export const MachineTypesConfigurations = () => {
     const addState = useDisclosure()
     const machineTypes = useMachineTypesSelector()
 
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             {
                 machineTypes.length ? (
                     <ScrollView>
                         {
-                            machineTypes.map(machineType => (
-                                <MachineType key={machineType.id} data={machineType} />
+                            machineTypes.map((machineType, machinTypeIdx) => (
+                                <MachineType key={machineType.id} data={machineType} index={machinTypeIdx} />
                             ))
                         }
                     </ScrollView>
@@ -55,9 +56,10 @@ export const MachineTypesConfigurations = () => {
 
 interface MachineTypeProps {
     data: IMachineType
+    index: number
 }
 
-const MachineType = ({ data }: MachineTypeProps) => {
+const MachineType = ({ data, index }: MachineTypeProps) => {
     return (
         <Box background='white' mx={3} mt={3} p={4} borderRadius='md' borderWidth={1} borderColor='gray.200'>
             <Icon as={Ionicons} name='construct-outline' size='lg' />
@@ -76,7 +78,7 @@ const MachineType = ({ data }: MachineTypeProps) => {
             <Flex alignItems='flex-end' mt={5}>
                 <Flex flexDirection='row' alignItems='center' justifyContent='space-between'>
                     <IconButton variant='subtle' backgroundColor='blue.600' icon={<Icon as={Ionicons} name='create-outline' size='sm' color='white' />} />
-                    <DeleteMachineTypeDialog />
+                    <DeleteMachineTypeDialog index={index} data={data} />
                 </Flex>
             </Flex>
         </Box>
