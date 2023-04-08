@@ -14,7 +14,6 @@ interface Props {
 
 export const Machine = ({ data, machineType, index }: Props) => {
     const updateState = useDisclosure()
-
     const title = data.data[machineType.metaData.titleAttribute] ? String(data.data[machineType.metaData.titleAttribute]) : 'N/A'
     return (
         <>
@@ -33,7 +32,7 @@ export const Machine = ({ data, machineType, index }: Props) => {
                                     {type !== 'CHECKBOX' ? <Text>{key}</Text> : null}
                                     <Block
                                         type={type}
-                                        isChecked
+                                        isChecked={Boolean(value)}
                                         value={String(value)}
                                         checkboxLabel={type === 'CHECKBOX' ? key : undefined}
                                     />

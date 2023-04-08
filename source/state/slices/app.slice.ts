@@ -59,17 +59,29 @@ const appSlice = createSlice({
           payload.data.attributes.forEach((attribute) => {
             const typeDefaults =
               attribute.type === 'CHECKBOX'
-                ? true
+                ? false
                 : attribute.type === 'NUMBER'
-                ? 0
+                ? ''
                 : attribute.type === 'DATE'
-                ? new Date()
+                ? new Date().toISOString()
                 : '';
-                // const checkType = typeof machine.data[attribute.name] ===  "string" 
-            data[attribute.name] = machine.data[attribute.name] ?? typeDefaults;
+
+            data[attribute.name] = (
+              typeof machine.data[attribute.name] === 'string' &&
+              ['NUMBER', 'TEXT'].includes(attribute.type)
+            )
+              ? machine.data[attribute.name]
+              : typeof machine.data[attribute.name] === 'boolean' &&
+                ['CHECKBOX'].includes(attribute.type)
+              ? machine.data[attribute.name]
+              : typeof machine.data[attribute.name] === 'object' &&
+                ['DATE'].includes(attribute.type)
+              ? machine.data[attribute.name]
+              : typeDefaults;
           });
           return { ...machine, data };
         });
+
       }
 
       state.machineTypes = update(state.machineTypes, {
@@ -122,7 +134,9 @@ const appSlice = createSlice({
       state,
       { payload }: PayloadAction<{ id: string; data: Machine }>
     ) => {
-      state.machines = state.machines.map(mach => mach.id === payload.id ? payload.data : mach);
+      state.machines = state.machines.map((mach) =>
+        mach.id === payload.id ? payload.data : mach
+      );
     },
 
     DELETE_MACHINE_ACTION: (state, { payload }: PayloadAction<string>) => {
