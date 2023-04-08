@@ -1,15 +1,33 @@
 import 'react-native-gesture-handler';
 import { Navigator } from './source/navigation'
-import { NativeBaseProvider } from "native-base";
+import { Box, Center, NativeBaseProvider } from "native-base";
 import { Provider } from 'react-redux';
-import store from './source/state';
+import { PersistGate } from 'redux-persist/integration/react'
+import store, { persistor } from './source/state';
+import { ActivityIndicator, SafeAreaView, View } from 'react-native';
 
 export default function App() {
   return (
     <Provider store={store}>
       <NativeBaseProvider>
-        <Navigator />
+        <PersistGate loading={<Loader />} persistor={persistor}>
+          <Navigator />
+        </PersistGate>
       </NativeBaseProvider>
     </Provider>
   );
+}
+
+const Loader = () => {
+  return (
+    <NativeBaseProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <Center pt={50}>
+            <ActivityIndicator />
+          </Center>
+        </View>
+      </SafeAreaView>
+    </NativeBaseProvider>
+  )
 }

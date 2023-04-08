@@ -4,14 +4,12 @@ import { useDisclosure } from "../../../hooks/useDisclosure"
 import { Machine } from "../../components/Machine"
 import { RFValue } from "react-native-responsive-fontsize"
 import { AddMachine } from "../../components/AddMachine"
-import { useMachineTypeSelector, useMachineTypesSelector, useMachinesSelector, useMachinesUnderMachineTypeSelector } from "../../state/selectors"
-import { useSelector } from "react-redux"
-import { RootState } from "../../state"
+import { useMachineTypeSelector, useMachinesUnderMachineTypeSelector } from "../../state/selectors"
 import { RouteProp } from "@react-navigation/native"
 import { MainDrawerItemsProps } from "../../../types"
 
-// Name is dynamic.
-type MachineTypePageRouteProp = RouteProp<MainDrawerItemsProps, "">;
+// Name is dynamic so we don't have to set it.
+type MachineTypePageRouteProp = RouteProp<MainDrawerItemsProps>;
 
 interface Props {
     route: MachineTypePageRouteProp
@@ -19,6 +17,7 @@ interface Props {
 
 export const MachineType = ({ route }: Props) => {
     const addState = useDisclosure()
+    
     const machineType = useMachineTypeSelector(route.params.machineType)
     const machines = useMachinesUnderMachineTypeSelector(route.params.machineType)
 

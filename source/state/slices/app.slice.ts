@@ -2,6 +2,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Machine, MachineType } from '../../../models';
 import update from 'immutability-helper';
 import uuid from 'react-native-uuid';
+import _ from 'lodash';
 
 // ------------------------------------
 // Constants
@@ -45,6 +46,32 @@ const appSlice = createSlice({
       state,
       { payload }: PayloadAction<{ index: number; data: MachineType }>
     ) => {
+      const machineType = state.machineTypes[payload.index];
+
+      // Once the attribute changes, update the individual machines.
+      // Reasons: 1. Because some attributes could have been deleted.
+      // 2. Datatype of attribute could have been changed too,
+      // so it could cause some compatibility issues with the renderer form.
+      if (!_.isEqual(machineType.attributes, payload.data.attributes)) {
+        state.machines = state.machines.map((machine) => {
+          if (machine.machineTypeId !== machineType.id) return machine;
+          const data: Record<string, string | number | Date | boolean> = {};
+          payload.data.attributes.forEach((attribute) => {
+            const typeDefaults =
+              attribute.type === 'CHECKBOX'
+                ? true
+                : attribute.type === 'NUMBER'
+                ? 0
+                : attribute.type === 'DATE'
+                ? new Date()
+                : '';
+                // const checkType = typeof machine.data[attribute.name] ===  "string" 
+            data[attribute.name] = machine.data[attribute.name] ?? typeDefaults;
+          });
+          return { ...machine, data };
+        });
+      }
+
       state.machineTypes = update(state.machineTypes, {
         [payload.index]: {
           $set: payload.data,
