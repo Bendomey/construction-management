@@ -5,10 +5,14 @@ import { RFValue } from "react-native-responsive-fontsize"
 import { Machine } from "../../components/Machine"
 import { AddMachine } from "../../components/AddMachine"
 import { useDisclosure } from "../../../hooks/useDisclosure"
+import { NavigationProp } from "@react-navigation/native"
+import { MainDrawerItemsProps } from "../../../types"
+
+type DashboardPageNavigationProp = NavigationProp<MainDrawerItemsProps, "Dashboard">;
 
 interface Props {
     /** TODO: type it */
-    navigation: any
+    navigation: DashboardPageNavigationProp
 }
 export const Dashboard = ({ navigation }: Props) => {
     const machines = useMachinesSelector()

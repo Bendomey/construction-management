@@ -7,10 +7,14 @@ import { AddMachine } from "../../components/AddMachine"
 import { useMachineTypeSelector, useMachineTypesSelector, useMachinesSelector, useMachinesUnderMachineTypeSelector } from "../../state/selectors"
 import { useSelector } from "react-redux"
 import { RootState } from "../../state"
+import { RouteProp } from "@react-navigation/native"
+import { MainDrawerItemsProps } from "../../../types"
+
+// Name is dynamic.
+type MachineTypePageRouteProp = RouteProp<MainDrawerItemsProps, "">;
 
 interface Props {
-    /** TODO: Type it */
-    route: any
+    route: MachineTypePageRouteProp
 }
 
 export const MachineType = ({ route }: Props) => {

@@ -3,11 +3,11 @@ import { useDisclosure } from "../../../hooks/useDisclosure"
 import { Formik, FormikHelpers } from "formik";
 import { MachineTypeAttribute } from "../../../models"
 import * as Yup from 'yup';
+import { ReactElement } from "react";
 
 interface Props {
     type: 'Add' | 'Update'
-    /** TOD: Type it */
-    InvokeAttributeComponent: any
+    InvokeAttributeComponent: ({ onPress }: { onPress: VoidFunction }) => JSX.Element
     onSubmit: (data: MachineTypeAttribute) => void;
     data?: MachineTypeAttribute
 }

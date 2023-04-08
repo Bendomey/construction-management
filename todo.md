@@ -1,5 +1,4 @@
 Fix
-- typings
 - update attribute not showing correct type
 - fix source/components/AddMachine/index.tsx:36
 
