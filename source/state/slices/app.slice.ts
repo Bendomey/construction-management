@@ -52,6 +52,22 @@ const appSlice = createSlice({
       });
     },
 
+    UPDATE_TITLE_ATTRIBUTE_FOR_MACHINE_TYPE_ACTION: (
+      state,
+      { payload }: PayloadAction<{ machineTypeId: string; attribute }>
+    ) => {
+      state.machineTypes = state.machineTypes.map((mt) =>
+        mt.id === payload.machineTypeId
+          ? {
+              ...mt,
+              metaData: {
+                titleAttribute: payload.attribute,
+              },
+            }
+          : mt
+      );
+    },
+
     DELETE_MACHINE_TYPE_ACTION: (state, { payload }: PayloadAction<string>) => {
       state.machineTypes = state.machineTypes.filter(
         (machineType) => machineType.id !== payload
@@ -98,6 +114,7 @@ export const {
   SAVE_NEW_MACHINE_TYPE_ACTION,
   DELETE_MACHINE_TYPE_ACTION,
   UPDATE_MACHINE_TYPE_ACTION,
+  UPDATE_TITLE_ATTRIBUTE_FOR_MACHINE_TYPE_ACTION,
   ADD_MACHINE_ACTION,
   DELETE_MACHINE_ACTION,
   UPDATE_MACHINE_ACTION,

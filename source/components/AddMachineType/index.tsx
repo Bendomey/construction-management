@@ -77,7 +77,20 @@ export const AddMachineType = ({ isOpen, close }: Props) => {
                         }])
                     }
 
-                    const removeAttribute = (index: number) => setFieldValue('attributes', update(values.attributes, { $splice: [[index, 1]] }))
+                    const removeAttribute = async (index: number) => {
+                        let attributes = update(values.attributes, { $splice: [[index, 1]] })
+                        if (attributes.length) {
+                            attributes = update(attributes, {
+                                0: {
+                                    $set: {
+                                        ...attributes[0],
+                                        isTitleAttribute: true,
+                                    }
+                                }
+                            })
+                        }
+                        setFieldValue('attributes', attributes)
+                    }
 
                     const updateAttribute = (index: number, attribute: AttributesDataProps) => setFieldValue("attributes", update(values.attributes, { [index]: { $set: attribute } }))
                     return (
@@ -106,23 +119,21 @@ export const AddMachineType = ({ isOpen, close }: Props) => {
                                         {
                                             errors.attributes ? <Text fontSize="xs" color='red.600'>{errors.attributes as string}</Text> : null
                                         }
-
-                                        <>
-                                            {
-                                                values.attributes.length ? (
-                                                    <>
-                                                        <AttributeDialog onSubmit={addnewAttribute} type='Add' InvokeAttributeComponent={({ onPress }) => (
-                                                            <AddNewAttribute onPress={onPress} />
-                                                        )} />
-                                                        <Text mt={4} fontSize='xs' color='gray.400'>NB: Click on an attribute to make it the title attribute.</Text>
-                                                        {
-                                                            values.attributes.map((attribute, attributeIdx) => <Attribute onRemove={() => removeAttribute(attributeIdx)} onUpdate={(values) => updateAttribute(attributeIdx, values)} key={attributeIdx} active={attribute.isTitleAttribute} data={attribute} />)
-                                                        }
-                                                    </>
-                                                ) : <NoAttributesAdded onSubmit={addnewAttribute} />
-                                            }
-
-                                        </>
+                                        {
+                                            values.attributes.length ? (
+                                                <>
+                                                    <AttributeDialog onSubmit={addnewAttribute} type='Add' InvokeAttributeComponent={({ onPress }) => (
+                                                        <AddNewAttribute onPress={onPress} />
+                                                    )} />
+                                                    <Text mt={4} fontSize='xs' color='gray.400'>NB: Click on an attribute to make it the title attribute.</Text>
+                                                    {
+                                                        values.attributes.map((attribute, attributeIdx) => <Attribute onPress={() => {
+                                                            setFieldValue('attributes', values.attributes.map((attr, attrIndex) => attrIndex === attributeIdx ? ({ ...attr, isTitleAttribute: true }) : ({ ...attr, isTitleAttribute: false })))
+                                                        }} onRemove={() => removeAttribute(attributeIdx)} onUpdate={(values) => updateAttribute(attributeIdx, values)} key={attributeIdx} active={attribute.isTitleAttribute} data={attribute} />)
+                                                    }
+                                                </>
+                                            ) : <NoAttributesAdded onSubmit={addnewAttribute} />
+                                        }
                                     </Box>
                                 </Modal.Body>
                                 <Modal.Footer>
@@ -143,12 +154,13 @@ interface AttributeProps {
     active?: boolean
     data: AttributesDataProps
     onRemove: VoidFunction
+    onPress: VoidFunction
     onUpdate: (values: AttributesDataProps) => void
 }
 
-const Attribute = ({ active = false, data, onRemove, onUpdate }: AttributeProps) => {
+const Attribute = ({ active = false, data, onRemove, onUpdate, onPress }: AttributeProps) => {
     return (
-        <Pressable mt={2} >
+        <Pressable mt={2} onPress={onPress}>
             <Box borderWidth={active ? 1 : 0.5} p={3} borderColor={active ? 'blue.600' : 'gray.200'} borderRadius='md'>
                 <Flex flexDirection='row' alignItems='flex-start' justifyContent='space-between'>
                     <Box display='flex' alignItems='flex-start' width='70%'>
